@@ -8,6 +8,7 @@ idRegex="([a-zA-Z0-9]{5,}):"
 toRegex="to=<(.*?)>, relay"
 reasonRegex="status=[a-z]{1,} (.*)$"
 fromRegex="from=<(.*?)>, size"
+clientRegex="client=(.*?)\["
 #processing
 if [ ! -f $file ]; then 
     echo "File $file not found!"
@@ -49,7 +50,16 @@ while read line; do
 					newstr="FROM: $from;| ${BadMailHash[$id]}"
 					BadMailHash[$id]=$newstr
 				fi
+				
 			fi
+			if [[ $line =~ $clientRegex ]]; then
+                                client="${BASH_REMATCH[1]}"
+                                if [[ ! "${BadMailHash[$id]}" =~ ^CLIENT ]]; then
+                                newstr="CLIENT: $client;| ${BadMailHash[$id]}"
+                                BadMailHash[$id]=$newstr
+                                fi
+                        fi
+
 		fi
 	fi
  done < $file
